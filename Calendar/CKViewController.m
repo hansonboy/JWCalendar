@@ -26,7 +26,9 @@
         CKCalendarView *calendar = [[CKCalendarView alloc] initWithStartDay:startMonday];
         self.calendar = calendar;
         calendar.delegate = self;
-
+        calendar.dayTitle = @"可预约";
+        calendar.topTitle = @"可预约时间";
+        
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"dd/MM/yyyy"];
         self.minimumDate = [self.dateFormatter dateFromString:@"20/01/2016"];
@@ -73,8 +75,8 @@
 
 /** 是否可以被预约*/
 - (BOOL)isAcceptedForAppointment:(NSDate *)date {
-    for (NSDate *date in self.appointmentAcceptDates) {
-        if ([date isEqualToDate:date]) {
+    for (NSDate *appointmentAcceptDate in self.appointmentAcceptDates) {
+        if ([date isEqualToDate:appointmentAcceptDate]) {
             return YES;
         }
     }
@@ -84,14 +86,19 @@
 #pragma mark -
 #pragma mark - CKCalendarDelegate
 
-- (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date {
+- (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem dateButton:(DateButton *)dateButton forDate:(NSDate *)date {
     // TODO: play with the coloring if we want to...
     if ([self isAcceptedForAppointment:date]) {
-        dateItem.backgroundColor = [UIColor whiteColor];
-        dateItem.textColor = [UIColor redColor];
+        dateItem.backgroundColor = kBackgroundBlueColor;
+        dateItem.textColor = kLightBlueColor;
+        dateItem.titleColor = kLightBlueColor;
+        dateButton.hiddenTitleLable = NO;
+        dateButton.layer.borderColor = kLightBlueColor.CGColor;
+        dateButton.layer.borderWidth = 1;
+        dateButton.layer.cornerRadius = 4.0f;
     }else  {
-        dateItem.backgroundColor = [UIColor whiteColor];
-        dateItem.textColor = [UIColor darkTextColor];
+        dateButton.layer.borderWidth = 0;
+        dateButton.hiddenTitleLable = YES;
     }
 }
 
@@ -101,18 +108,21 @@
 
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date {
     self.dateLabel.text = [self.dateFormatter stringFromDate:date];
+    NSLog(@"选中了某一天");
 }
 
 - (BOOL)calendar:(CKCalendarView *)calendar willChangeToMonth:(NSDate *)date {
     if ([date laterDate:self.minimumDate] == date && [date earlierDate:self.maxmumDate] == date) {
-        self.calendar.backgroundColor = [UIColor blueColor];
+//        self.calendar.backgroundColor = [UIColor blueColor];
         return YES;
     } else {
-        self.calendar.backgroundColor = [UIColor redColor];
+//        self.calendar.backgroundColor = [UIColor redColor];
         return NO;
     }
 }
-
+- (BOOL)calendar:(CKCalendarView *)calendar willDeselectDate:(NSDate *)date {
+    return NO;
+}
 - (void)calendar:(CKCalendarView *)calendar didLayoutInRect:(CGRect)frame {
     NSLog(@"calendar layout: %@", NSStringFromCGRect(frame));
 }
