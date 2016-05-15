@@ -28,9 +28,10 @@
                                 [_calendar.selectedDateFormatter dateFromString:@"07/05/2016"]
                                 ]copy];
         [self.view addSubview:_calendar];
-        [self.calendar mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self.view);
-        }];
+//        不支持masonry
+//        [self.calendar mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.edges.equalTo(self.view);
+//        }];
     }
     return self;
 }
